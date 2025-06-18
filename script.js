@@ -1,20 +1,23 @@
-// Function to fetch AI response
+// Function to fetch AI response using OpenRouter (Free AI model)
 async function fetchAIResponse(userInput) {
-  const response = await fetch('https://api.example.com/endpoint', {
-    method: 'POST',
+  const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer YOUR_API_KEY', // Replace with your actual API key
+      "Authorization": "Bearer YOUR_API_KEY_HERE", // Replace with your real API key from openrouter.ai
+      "Content-Type": "application/json"
     },
-    body: JSON.stringify({ input: userInput }),
+    body: JSON.stringify({
+      model: "mistralai/mistral-7b-instruct",
+      messages: [{ role: "user", content: userInput }]
+    })
   });
 
   if (!response.ok) {
-    throw new Error('Network response was not ok');
+    throw new Error("Network response was not ok");
   }
 
   const data = await response.json();
-  return data.output; // Adjust based on actual API response structure
+  return data.choices[0].message.content;
 }
 
 // Dark/Light Mode Toggle
@@ -100,7 +103,7 @@ if (document.getElementById('chatbot-container')) {
   const chatOutput = document.getElementById('chat-output');
   const chatInput = document.getElementById('chat-input');
   const sendBtn = document.getElementById('send-btn');
-  const chatForm = document.getElementById('chat-form'); // Ensure this exists in your HTML
+  const chatForm = document.getElementById('chat-form');
 
   chatForm.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -126,7 +129,7 @@ if (document.getElementById('chatbot-container')) {
     msgDiv.classList.add('message', sender === 'user' ? 'user-message' : 'bot-message');
     msgDiv.textContent = text;
     chatOutput.appendChild(msgDiv);
-    chatOutput.scrollTop = chatOutput.scrollHeight; // Scroll to latest
+    chatOutput.scrollTop = chatOutput.scrollHeight;
   }
 }
 
