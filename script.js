@@ -79,3 +79,20 @@ chatForm.addEventListener('submit', (e) => {
     addMessage(botReply, 'bot');
   }, 700);
 });
+async function fetchAIResponse(userInput) {
+  const response = await fetch('https://api.example.com/endpoint', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer YOUR_API_KEY', // Replace with your actual API key
+    },
+    body: JSON.stringify({ input: userInput }),
+  });
+
+  if (!response.ok) {
+    throw new Error('Network response was not ok');
+  }
+
+  const data = await response.json();
+  return data.output; // Adjust based on the actual API response structure
+}
