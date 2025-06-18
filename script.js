@@ -208,3 +208,29 @@ chatForm.addEventListener('submit', (e) => {
     addMessage(botReply, 'bot');
   }, 700);
   
+sendBtn.addEventListener('click', async () => {
+  const question = chatInput.value.trim().toLowerCase();
+  if (!question) return;
+
+  // Fetch response from AI API
+  try {
+    const answer = await fetchAIResponse(question);
+
+    const userMsg = document.createElement('div');
+    userMsg.textContent = `You: ${chatInput.value}`;
+    userMsg.style.fontWeight = 'bold';
+
+    const botMsg = document.createElement('div');
+    botMsg.textContent = `MindNest: ${answer}`;
+
+    chatOutput.appendChild(userMsg);
+    chatOutput.appendChild(botMsg);
+
+    // Scroll to the bottom of the chat output
+    chatOutput.scrollTop = chatOutput.scrollHeight;
+    chatInput.value = '';
+  } catch (error) {
+    console.error('Error fetching AI response:', error);
+    alert('Sorry, there was an error fetching the response.');
+  }
+});
