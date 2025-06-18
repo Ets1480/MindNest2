@@ -17,7 +17,7 @@ async function fetchAIResponse(userInput) {
   return data.output; // Adjust based on actual API response structure
 }
 
-// Dark/Light Mode Toggle (shared on both pages)
+// Dark/Light Mode Toggle
 const toggleButtons = document.querySelectorAll('#toggle-theme');
 toggleButtons.forEach(btn => 
   btn.addEventListener('click', () => {
@@ -67,7 +67,6 @@ if (document.getElementById('signup-form')) {
     const storedUser = JSON.parse(localStorage.getItem('user'));
     if (storedUser && storedUser.email === email && storedUser.password === password) {
       localStorage.setItem('loggedInUser', JSON.stringify(storedUser));
-
       alert(`Welcome back, ${storedUser.name}!`);
       window.location.href = 'chatbot.html';
     } else {
@@ -101,30 +100,34 @@ if (document.getElementById('chatbot-container')) {
   const chatOutput = document.getElementById('chat-output');
   const chatInput = document.getElementById('chat-input');
   const sendBtn = document.getElementById('send-btn');
+  const chatForm = document.getElementById('chat-form'); // Ensure this exists in your HTML
 
-  sendBtn.addEventListener('click', async () => {
+  chatForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
     const question = chatInput.value.trim().toLowerCase();
     if (!question) return;
 
+    // Add user message
+    addMessage(question, 'user');
+    chatInput.value = '';
+
     try {
       const answer = await fetchAIResponse(question);
-
-      const userMsg = document.createElement('div');
-      userMsg.textContent = `You: ${chatInput.value}`;
-      userMsg.style.fontWeight = 'bold';
-
-      const botMsg = document.createElement('div');
-      botMsg.textContent = `MindNest: ${answer}`;
-
-      chatOutput.appendChild(userMsg);
-      chatOutput.appendChild(botMsg);
-      chatOutput.scrollTop = chatOutput.scrollHeight;
-      chatInput.value = '';
+      addMessage(answer, 'bot');
     } catch (error) {
       console.error('Error fetching AI response:', error);
-      alert('Sorry, there was an error fetching the response.');
+      addMessage('Sorry, there was an error fetching the response.', 'bot');
     }
   });
+
+  function addMessage(text, sender) {
+    const msgDiv = document.createElement('div');
+    msgDiv.classList.add('message', sender === 'user' ? 'user-message' : 'bot-message');
+    msgDiv.textContent = text;
+    chatOutput.appendChild(msgDiv);
+    chatOutput.scrollTop = chatOutput.scrollHeight; // Scroll to latest
+  }
 }
 
 // Dark/Light mode toggle and remember preference
@@ -147,90 +150,9 @@ const savedMode = localStorage.getItem('mindnest-mode') || 'light';
 applyMode(savedMode);
 
 // Toggle mode on button click
-modeToggleBtn.addEventListener('click', () => {
-  const newMode = body.classList.contains('dark-mode') ? 'light' : 'dark';
-  applyMode(newMode);
-});
-
-// Chatbot logic
-const chatContainer = document.getElementById('chat-container');
-const chatForm = document.getElementById('chat-form');
-const chatInput = document.getElementById('chat-input');
-
-function addMessage(text, sender = 'bot') {
-  const msgDiv = document.createElement('div');
-  msgDiv.classList.add('message', sender === 'user' ? 'user-message' : 'bot-message');
-  msgDiv.textContent = text;
-  chatContainer.appendChild(msgDiv);
-  chatContainer.scrollTop = chatContainer.scrollHeight; // scroll to latest
+if (modeToggleBtn) {
+  modeToggleBtn.addEventListener('click', () => {
+    const newMode = body.classList.contains('dark-mode') ? 'light' : 'dark';
+    applyMode(newMode);
+  });
 }
-
-// Simple bot response logic
-function getBotResponse(userText) {
-  const text = userText.toLowerCase().trim();
-
-  if (!text) return "Please say something so I can help you.";
-
-  if (text.includes('hello') || text.includes('hi')) {
-    return "Hello! How can MindNest support your mental wellness today?";
-  }
-  if (text.includes('help')) {
-    return "Sure! You can ask me about relaxation tips, focus exercises, or financial advice.";
-  }
-  if (text.includes('focus')) {
-    return "To improve focus, try the Pomodoro technique: work for 25 minutes, then take a 5-minute break.";
-  }
-  if (text.includes('stress') || text.includes('anxiety')) {
-    return "Deep breathing exercises and mindfulness meditation can help reduce stress.";
-  }
-  if (text.includes('finance') || text.includes('money')) {
-    return "Creating a budget and tracking expenses are great first steps to financial empowerment.";
-  }
-
-  // Default reply
-  return "Thanks for sharing! MindNest is here to help with mental wellness and focus. Ask me anything!";
-}
-
-// Handle form submission
-chatForm.addEventListener('submit', (e) => {
-  e.preventDefault();
-
-  const userText = chatInput.value.trim();
-  if (!userText) return;
-
-  addMessage(userText, 'user');
-  chatInput.value = '';
-  chatInput.focus();
-
-  // Simulate a short delay for bot reply
-  setTimeout(() => {
-    const botReply = getBotResponse(userText);
-    addMessage(botReply, 'bot');
-  }, 700);
-  
-sendBtn.addEventListener('click', async () => {
-  const question = chatInput.value.trim().toLowerCase();
-  if (!question) return;
-
-  // Fetch response from AI API
-  try {
-    const answer = await fetchAIResponse(question);
-
-    const userMsg = document.createElement('div');
-    userMsg.textContent = `You: ${chatInput.value}`;
-    userMsg.style.fontWeight = 'bold';
-
-    const botMsg = document.createElement('div');
-    botMsg.textContent = `MindNest: ${answer}`;
-
-    chatOutput.appendChild(userMsg);
-    chatOutput.appendChild(botMsg);
-
-    // Scroll to the bottom of the chat output
-    chatOutput.scrollTop = chatOutput.scrollHeight;
-    chatInput.value = '';
-  } catch (error) {
-    console.error('Error fetching AI response:', error);
-    alert('Sorry, there was an error fetching the response.');
-  }
-});
