@@ -1,30 +1,9 @@
-// Function to fetch AI response using OpenRouter (Free AI model)
-async function fetchAIResponse(userInput) {
-  const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      "Authorization": "Bearer YOUR_API_KEY_HERE", // Replace with your real API key from openrouter.ai
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      model: "mistralai/mistral-7b-instruct",
-      messages: [{ role: "user", content: userInput }]
-    })
-  });
-
-  if (!response.ok) {
-    throw new Error("Network response was not ok");
-  }
-
-  const data = await response.json();
-  return data.choices[0].message.content;
-}
-
-// Dark/Light Mode Toggle
+// Dark/Light Mode Toggle (shared on both pages)
 const toggleButtons = document.querySelectorAll('#toggle-theme');
-toggleButtons.forEach(btn => 
+toggleButtons.forEach(btn =>
   btn.addEventListener('click', () => {
     document.body.classList.toggle('dark-mode');
+    // Save mode preference
     localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
   })
 );
@@ -53,6 +32,7 @@ if (document.getElementById('signup-form')) {
       return;
     }
 
+    // Save user data (for demo, using localStorage)
     const user = { name, email, password };
     localStorage.setItem('user', JSON.stringify(user));
 
@@ -69,8 +49,11 @@ if (document.getElementById('signup-form')) {
 
     const storedUser = JSON.parse(localStorage.getItem('user'));
     if (storedUser && storedUser.email === email && storedUser.password === password) {
+      // Save login state
       localStorage.setItem('loggedInUser', JSON.stringify(storedUser));
+
       alert(`Welcome back, ${storedUser.name}!`);
+      // Redirect to chatbot page
       window.location.href = 'chatbot.html';
     } else {
       alert('Incorrect email or password');
@@ -90,72 +73,44 @@ if (document.getElementById('chatbot-container')) {
     document.getElementById('user-name').textContent = storedUser.name;
   }
 
-  const logoutBtn = document.getElementById('logout-btn');
-  if (logoutBtn) {
-    logoutBtn.addEventListener('click', () => {
-      localStorage.removeItem('loggedInUser');
-      alert('Logged out!');
-      window.location.href = 'index.html';
-    });
-  }
+  // Logout button
+  document.getElementById('logout-btn').addEventListener('click', () => {
+    localStorage.removeItem('loggedInUser');
+    alert('Logged out!');
+    window.location.href = 'index.html';
+  });
 
   // Chatbot logic
   const chatOutput = document.getElementById('chat-output');
   const chatInput = document.getElementById('chat-input');
   const sendBtn = document.getElementById('send-btn');
-  const chatForm = document.getElementById('chat-form');
 
-  chatForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
+  // Example Q&A dataset (extend this to 200+ answers)
+  const qaDataset = {
+    "hello": "Hello! How can I help you today?",
+    "how are you": "I'm just a bot, but I'm here to assist you!",
+    "what is mindnest": "MindNest is your AI assistant for mental health and finance.",
+    // ... add 200+ Q&A pairs here
+  };
 
+  sendBtn.addEventListener('click', () => {
     const question = chatInput.value.trim().toLowerCase();
     if (!question) return;
 
-    // Add user message
-    addMessage(question, 'user');
-    chatInput.value = '';
+    const answer = qaDataset[question] || "Sorry, I don't have an answer for that.";
 
-    try {
-      const answer = await fetchAIResponse(question);
-      addMessage(answer, 'bot');
-    } catch (error) {
-      console.error('Error fetching AI response:', error);
-      addMessage('Sorry, there was an error fetching the response.', 'bot');
-    }
-  });
+    const userMsg = document.createElement('div');
+    userMsg.textContent = `You: ${chatInput.value}`;
+    userMsg.style.fontWeight = 'bold';
 
-  function addMessage(text, sender) {
-    const msgDiv = document.createElement('div');
-    msgDiv.classList.add('message', sender === 'user' ? 'user-message' : 'bot-message');
-    msgDiv.textContent = text;
-    chatOutput.appendChild(msgDiv);
+    const botMsg = document.createElement('div');
+    botMsg.textContent = `MindNest: ${answer}`;
+
+    chatOutput.appendChild(userMsg);
+    chatOutput.appendChild(botMsg);
+
+    // Scroll to the bottom of the chat output
     chatOutput.scrollTop = chatOutput.scrollHeight;
-  }
-}
-
-// Dark/Light mode toggle and remember preference
-const modeToggleBtn = document.getElementById('mode-toggle');
-const body = document.body;
-
-function applyMode(mode) {
-  if (mode === 'dark') {
-    body.classList.add('dark-mode');
-    modeToggleBtn.textContent = '☀️';
-  } else {
-    body.classList.remove('dark-mode');
-    modeToggleBtn.textContent = '🌙';
-  }
-  localStorage.setItem('mindnest-mode', mode);
-}
-
-// Initialize mode on page load
-const savedMode = localStorage.getItem('mindnest-mode') || 'light';
-applyMode(savedMode);
-
-// Toggle mode on button click
-if (modeToggleBtn) {
-  modeToggleBtn.addEventListener('click', () => {
-    const newMode = body.classList.contains('dark-mode') ? 'light' : 'dark';
-    applyMode(newMode);
+    chatInput.value = '';
   });
 }
