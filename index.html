@@ -1,51 +1,51 @@
-<!DOCTYPE html>
+  <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>MindNest — Your AI Mental Wellness Assistant</title>
-  <link rel="stylesheet" href="styles.css" />
-  <meta name="description" content="MindNest is an AI-powered assistant to help you with mental wellness, focus, and financial empowerment." />
-</head>
-<body>
-  <header>
-    <div class="container">
-      <h1>🌿 MindNest</h1>
-      <p>Your trusted AI companion for mental wellness & focus</p>
-      <button id="mode-toggle" aria-label="Toggle Dark/Light Mode" title="Toggle Dark/Light Mode">🌙</button>
-    </div>
-  </header>
-
-  <main>
-    <section id="chatbot-section" aria-label="Chatbot interface">
-      <h2>Start a Conversation</h2>
-      <div id="chat-container" role="log" aria-live="polite" aria-relevant="additions"></div>
-      <form id="chat-form" autocomplete="off" aria-label="Send message form">
-        <input
-          type="text"
-          id="chat-input"
-          name="chat-input"
-          placeholder="Type your message here..."
-          required
-          aria-required="true"
-          aria-describedby="chat-instructions"
-          autofocus
-        />
-        <button type="submit" aria-label="Send message">Send</button>
-      </form>
-      <p id="chat-instructions" class="visually-hidden">
-        Type your message in the input box and press Send to chat with MindNest.
-      </p>
-    </section>
-  </main>
-
-  <footer>
-    <p class="footer-text">
-      Created with <span aria-label="love">❤</span> by <a href="https://github.com/ets1480" target="_blank" rel="noopener noreferrer">@ets1480</a> (Leyutsega Abebaw) |
-      Email: <a href="mailto:leyutsegaleyu@gmail.com">leyutsegaleyu@gmail.com</a>
-    </p>
-  </footer>
-
-  <script src="script.js"></script>
-</body>
-</html>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MindNest Chatbot</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background-color: #f0f8ff;
+      margin: 0;
+      padding: 0;
+    }
+    #chat-container {
+      max-width: 600px;
+      margin: 40px auto;
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    #messages {
+      max-height: 400px;
+      overflow-y: auto;
+      margin-bottom: 20px;
+    }
+    .user-msg, .bot-msg {
+      margin: 10px 0;
+      padding: 10px;
+      border-radius: 8px;
+    }
+    .user-msg {
+      background: #d0eaff;
+      text-align: right;
+    }
+    .bot-msg {
+      background: #f0f0f0;
+      text-align: left;
+    }
+    #chat-form {
+      display: flex;
+      gap: 10px;
+    }
+    #user-input {
+      flex-grow: 1;
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+    button {
